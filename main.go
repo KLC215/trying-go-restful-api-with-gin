@@ -2,6 +2,7 @@ package main
 
 import (
 	"apiserver/config"
+	"apiserver/model"
 	"apiserver/router"
 	"errors"
 	"net/http"
@@ -24,6 +25,10 @@ func main() {
 	if err := config.Init(*cfg); err != nil {
 		panic(err)
 	}
+
+	// Inital database connection
+	model.DB.Init()
+	defer model.DB.Close()
 
 	// Create Gin engine
 	g := gin.New()
