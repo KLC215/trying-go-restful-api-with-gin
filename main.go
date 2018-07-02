@@ -4,15 +4,13 @@ import (
 	"apiserver/config"
 	"apiserver/router"
 	"errors"
-	"log"
 	"net/http"
 	"time"
 
-	"github.com/spf13/viper"
-
-	"github.com/spf13/pflag"
-
 	"github.com/gin-gonic/gin"
+	"github.com/lexkong/log"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -49,11 +47,11 @@ func main() {
 		if err := pingServer(); err != nil {
 			log.Fatal("The router has no response, or it might took too long to start up.", err)
 		}
-		log.Print("The router has been deployed successfully.")
+		log.Info("The router has been deployed successfully.")
 	}()
 
-	log.Printf("Start to listening the incoming request on http address: %s", viper.GetString("port"))
-	log.Printf(http.ListenAndServe(viper.GetString("port"), g).Error())
+	log.Infof("Start to listening the incoming request on http address: %s", viper.GetString("port"))
+	log.Info(http.ListenAndServe(viper.GetString("port"), g).Error())
 }
 
 func pingServer() error {
@@ -64,7 +62,7 @@ func pingServer() error {
 			return nil
 		}
 
-		log.Print("Waiting for the router, retry in 1 second.")
+		log.Info("Waiting for the router, retry in 1 second.")
 		time.Sleep(time.Second)
 	}
 

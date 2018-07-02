@@ -1,5 +1,20 @@
+# Development mode: debug, release, test
 runmode: debug
+# HTTP port
 port: :8888
+# API server name
 name: apiserver
+# URL for pingServer function
 url: http://127.0.0.1:8888
+# Retry times for pingServer function
 max_ping_count: 10
+# Logging
+log:
+  writers: file,stdout
+  logger_level: DEBUG
+  logger_file: log/apiserver.log
+  log_format_text: false
+  rolling_policy: size
+  log_rotate_data: 1
+  log_rotate_size: 1024
+  log_backup_count: 7

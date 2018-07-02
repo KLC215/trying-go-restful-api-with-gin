@@ -1,11 +1,10 @@
 package config
 
 import (
-	"log"
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
-
+	"github.com/lexkong/log"
 	"github.com/spf13/viper"
 )
 
@@ -25,6 +24,8 @@ func Init(cfg string) error {
 
 	// Monitoring configuration file changes and hot-reloading program
 	c.watchConfig()
+	// Initial logging package
+	c.initLog()
 
 	return nil
 }
@@ -52,10 +53,36 @@ func (c *Config) initConfig() error {
 	return nil
 }
 
+func (c *Config) initLog() {
+	passLagerCfg := log.PassLagerCfg{
+		// file: save log to LoggerFile
+		// stdout: display standard output
+		Writers: viper.GetString("log.writers"),
+		// DEBUG, INFO, WARN, ERROR, FATAL
+		LoggerLevel: viper.GetString("log.logger_level"),
+		// Logger file name
+		LoggerFile: viper.GetString("log.logger_file"),
+		// true: json format
+		// false: plain text
+		LogFormatText: viper.GetBool("log.log_format_text"),
+		// daliy: save by day
+		// size: save by size
+		RollingPolicy: viper.GetString("log.rolling_policy"),
+		// pair with RollingPolicy: daliy
+		LogRotateDate: viper.GetInt("log.log_rotate_date"),
+		// pair with RollingPolicy: size
+		LogRotateSize: viper.GetInt("log.log_rotate_size"),
+		// Backup zip file count
+		LogBackupCount: viper.GetInt("log.log_backup_count"),
+	}
+
+	log.InitWithConfig(&passLagerCfg)
+}
+
 // Hot-reloading configuration file
 func (c *Config) watchConfig() {
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		log.Printf("Config file changed: %s", e.Name)
+		log.Infof("Config file changed: %s", e.Name)
 	})
 }
