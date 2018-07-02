@@ -18,3 +18,15 @@ log:
   log_rotate_data: 1
   log_rotate_size: 1024
   log_backup_count: 7
+
+# Database
+db:
+  name: db_apiserver
+  host: 127.0.0.1:3306
+  username: root
+  password: root
+docker_db:
+  name: db_apiserver
+  host: 127.0.0.1:3306
+  username: root
+  password: root
