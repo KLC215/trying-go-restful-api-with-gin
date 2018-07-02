@@ -2,6 +2,7 @@ package router
 
 import (
 	"apiserver/handler/sd"
+	"apiserver/handler/user"
 	"apiserver/router/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(middleware.NoCache)
 	g.Use(middleware.Options)
 	g.Use(middleware.Secure)
+
+	u := g.Group("/v1/user")
+	{
+		u.POST("", user.Create)
+	}
 
 	healthCheck := g.Group("/sd")
 	{
