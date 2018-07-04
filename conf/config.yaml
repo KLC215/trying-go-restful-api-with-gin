@@ -1,11 +1,11 @@
 # Development mode: debug, release, test
 runmode: debug
 # HTTP port
-port: :8888
+port: :8080
 # API server name
 name: apiserver
 # URL for pingServer function
-url: http://127.0.0.1:8888
+url: http://127.0.0.1:8080
 # Retry times for pingServer function
 max_ping_count: 10
 # Logging

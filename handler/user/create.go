@@ -1,42 +1,51 @@
 package user
 
 import (
+	. "apiserver/handler"
 	"apiserver/package/errors"
 	"fmt"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
 )
 
 func Create(c *gin.Context) {
-	var r struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	var err error
+	var r CreateRequest
 
 	if err := c.Bind(&r); err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": errors.BindError})
+		SendResponse(c, errors.BindError, nil)
 		return
 	}
+
+	username := c.Param("username")
+	log.Infof("URL username: %s", username)
+
+	desc := c.Query("desc")
+	log.Infof("URL key param desc: %s", desc)
+
+	contentType := c.GetHeader("Content-Type")
+	log.Infof("Header Content-Type: %s", contentType)
 
 	log.Debugf("username is: [%s], password is [%s]", r.Username, r.Password)
 
 	if r.Username == "" {
-		err = errors.New(errors.UserNotFoundError,
-			fmt.Errorf("username can not found in db: xx.xx.xx.xx")).Add("This is add message.")
-		log.Errorf(err, "Get an error")
-	}
+		SendResponse(c,
+			errors.New(errors.UserNotFoundError,
+				fmt.Errorf("Username cannot found in db: xx.xx.xx.xx")),
+			nil)
 
-	if errors.IsUserNotFoundError(err) {
-		log.Debug("Error type is UserNotFoundError")
+		return
 	}
 
 	if r.Password == "" {
-		err = fmt.Errorf("Password is empty")
+		SendResponse(c, fmt.Errorf("Password is empty"), nil)
+
+		return
 	}
 
-	code, message := errors.DecodeError(err)
-	c.JSON(http.StatusOK, gin.H{"code": code, "message": message})
+	res := CreateResponse{
+		Username: r.Username,
+	}
+
+	SendResponse(c, nil, res)
 }
