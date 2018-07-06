@@ -3,17 +3,28 @@ package user
 import (
 	. "apiserver/handler"
 	"apiserver/package/errors"
+	"apiserver/util"
 	"fmt"
+
+	"github.com/lexkong/log/lager"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
 )
 
 func Create(c *gin.Context) {
+
+	log.Info("[User]->Create function called.", lager.Data{"X-Request-Id": util.GetReqID(c)})
+
 	var r CreateRequest
 
 	if err := c.Bind(&r); err != nil {
 		SendResponse(c, errors.BindError, nil)
+		return
+	}
+
+	if err := r.checkParams(); err != nil {
+		SendResponse(c, err, nil)
 		return
 	}
 
