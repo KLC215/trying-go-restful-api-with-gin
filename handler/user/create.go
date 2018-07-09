@@ -2,9 +2,9 @@ package user
 
 import (
 	. "apiserver/handler"
+	"apiserver/model"
 	"apiserver/package/errors"
 	"apiserver/util"
-	"fmt"
 
 	"github.com/lexkong/log/lager"
 
@@ -23,34 +23,26 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	if err := r.checkParams(); err != nil {
-		SendResponse(c, err, nil)
+	u := model.UserModel{
+		Username: r.Username,
+		Password: r.Password,
+	}
+
+	// Validate data
+	if err := u.Validate(); err != nil {
+		SendResponse(c, errors.ValidationError, nil)
 		return
 	}
 
-	username := c.Param("username")
-	log.Infof("URL username: %s", username)
-
-	desc := c.Query("desc")
-	log.Infof("URL key param desc: %s", desc)
-
-	contentType := c.GetHeader("Content-Type")
-	log.Infof("Header Content-Type: %s", contentType)
-
-	log.Debugf("username is: [%s], password is [%s]", r.Username, r.Password)
-
-	if r.Username == "" {
-		SendResponse(c,
-			errors.New(errors.UserNotFoundError,
-				fmt.Errorf("Username cannot found in db: xx.xx.xx.xx")),
-			nil)
-
+	// Encrypt password
+	if err := u.Encrypt(); err != nil {
+		SendResponse(c, errors.EncryptError, nil)
 		return
 	}
 
-	if r.Password == "" {
-		SendResponse(c, fmt.Errorf("Password is empty"), nil)
-
+	// Insert user to database
+	if err := u.Create(); err != nil {
+		SendResponse(c, errors.DatabaseError, nil)
 		return
 	}
 
@@ -58,5 +50,6 @@ func Create(c *gin.Context) {
 		Username: r.Username,
 	}
 
+	// Show user details
 	SendResponse(c, nil, res)
 }
