@@ -4,6 +4,7 @@ import (
 	"apiserver/config"
 	"apiserver/model"
 	"apiserver/router"
+	"apiserver/router/middleware"
 	"errors"
 	"net/http"
 	"time"
@@ -36,15 +37,13 @@ func main() {
 	// Set gin run mode: debug, release, test
 	gin.SetMode(viper.GetString("runmode"))
 
-	// Define Gin middlewares
-	middlewares := []gin.HandlerFunc{}
-
 	// Define routes
 	router.Load(
 		// Cores
 		g,
 		// Middlewares
-		middlewares...,
+		middleware.Logging(),
+		middleware.RequestId(),
 	)
 
 	// Ping server to make sure the routing is working
