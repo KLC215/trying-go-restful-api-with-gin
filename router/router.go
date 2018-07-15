@@ -4,6 +4,7 @@ import (
 	"apiserver/handler/sd"
 	"apiserver/handler/user"
 	"apiserver/router/middleware"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(middleware.NoCache)
 	g.Use(middleware.Options)
 	g.Use(middleware.Secure)
+	g.Use(mw...)
+
+	g.NoRoute(func(c *gin.Context) {
+		c.String(http.StatusNotFound, "Route not found.")
+	})
 
 	u := g.Group("/v1/user")
 	{
