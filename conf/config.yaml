@@ -8,6 +8,13 @@ name: apiserver
 url: http://127.0.0.1:8080
 # Retry times for pingServer function
 max_ping_count: 10
+# JWT secret key
+jwt_secret: frSwMW35hRCSANGPWEA63jd7bzd3RKbC
+# TLS
+tls:
+  port: 8081
+  cert: conf/server.crt
+  key: conf/server.key
 # Logging
 log:
   writers: file,stdout
@@ -18,7 +25,6 @@ log:
   log_rotate_data: 1
   log_rotate_size: 1024
   log_backup_count: 7
-
 # Database
 db:
   name: db_apiserver

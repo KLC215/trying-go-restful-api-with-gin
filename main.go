@@ -54,6 +54,15 @@ func main() {
 		log.Info("The router has been deployed successfully.")
 	}()
 
+	cert := viper.GetString("tls.cert")
+	key := viper.GetString("tls.key")
+	if cert != "" && key != "" {
+		go func() {
+			log.Infof("Start to listening the incoming request on https address: %s", viper.GetString("tls.port"))
+			log.Info(http.ListenAndServeTLS(viper.GetString("tls.port"), cert, key, g).Error())
+		}()
+	}
+
 	log.Infof("Start to listening the incoming request on http address: %s", viper.GetString("port"))
 	log.Info(http.ListenAndServe(viper.GetString("port"), g).Error())
 }
